@@ -23,6 +23,7 @@ namespace Packer_Projekt
         public MainWindow()
         {
             InitializeComponent();
+            MessageBox.Show("TEst");
         }
     }
 }
