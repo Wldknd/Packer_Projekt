@@ -7,9 +7,9 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>
-        <Button Content="Verpacken" HorizontalAlignment="Left" Margin="135,144,0,0" VerticalAlignment="Top" Width="106" Height="58" Click="Verpacken"/>
-        <Button Content="Entpacken" HorizontalAlignment="Left" Margin="443,144,0,0" VerticalAlignment="Top" Width="118" Height="49"/>
-        <TextBox x:Name="Testbox" HorizontalAlignment="Left" Height="42" Margin="200,71,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="158"/>
+        <Button Content="Verpacken" HorizontalAlignment="Left" Margin="52,106,0,0" VerticalAlignment="Top" Width="169" Height="144" Click="Verpacken"/>
+        <Button x:Name="Entpacken" Content="Entpacken" HorizontalAlignment="Left" Margin="300,198,0,0" VerticalAlignment="Top" Width="172" Height="144" Click="Entpacken_Click"/>
+        <TextBox x:Name="Testbox" HorizontalAlignment="Left" Height="42" Margin="52,26,0,0" TextWrapping="Wrap" Text="Dateiname" VerticalAlignment="Top" Width="648"/>
 
     </Grid>
 </Window>

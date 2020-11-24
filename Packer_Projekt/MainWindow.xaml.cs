@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 
 namespace Packer_Projekt
 {
@@ -24,10 +25,9 @@ namespace Packer_Projekt
         public MainWindow()
         {
             InitializeComponent();
-            MessageBox.Show("TEst");
         }
 
-        private void Verpacken(object sender, RoutedEventArgs e)
+        public string File_Path()
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.InitialDirectory = "c:\\";
@@ -39,9 +39,34 @@ namespace Packer_Projekt
             if (openFileDialog1.ShowDialog() == true)
             {
                 string fileSelected = openFileDialog1.FileName;
-                Testbox.Text = fileSelected;
+                return fileSelected;
             }
 
+            else return "Fehler";
+        }
+        private void Verpacken_Click(object sender, RoutedEventArgs e)
+        {
+            Testbox.Text = File_Path();
+        }
+
+        private void Entpacken_Click(object sender, RoutedEventArgs e)
+        {
+            Testbox.Text = File_Path();
+        }
+
+        static void Entpacken_Method(string Filename)
+        {
+            FileStream file_r = new FileStream(Filename, FileMode.Open, FileAccess.Read);
+            BinaryReader br = new BinaryReader(file_r);
+            string newFilename = Filename + "1";
+            FileStream file_w = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
+            BinaryWriter bw = new BinaryWriter(file_w);
+
+            while(file_r.Position < file_r.Length)
+            {
+
+
+            }
         }
     }
 }
