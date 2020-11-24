@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,23 @@ namespace Packer_Projekt
         {
             InitializeComponent();
             MessageBox.Show("TEst");
+        }
+
+        private void Verpacken(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.InitialDirectory = "c:\\";
+            openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg";
+            //|*.txt|All files (*.*)|*.*
+            openFileDialog1.FilterIndex = 2;
+            openFileDialog1.RestoreDirectory = true;
+
+            if (openFileDialog1.ShowDialog() == true)
+            {
+                string fileSelected = openFileDialog1.FileName;
+                Testbox.Text = fileSelected;
+            }
+
         }
     }
 }
