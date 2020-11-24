@@ -64,7 +64,13 @@ namespace Packer_Projekt
 
             while(file_r.Position < file_r.Length)
             {
-
+                int i_int = 4;
+                while (file_r.Position > 5)
+                {
+                    file_r.Position = file_r.Position - i_int;
+                    i_int = 8;
+                    bw.Write(br.ReadChar());
+                }
 
             }
         }
