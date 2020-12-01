@@ -56,6 +56,17 @@ namespace Packer_Projekt
             string s_DateiPath = File_Path();
             Testbox.Text = s_DateiPath;
         }
+        private void Header(string s_newFilePath, string s_oldFilePath)
+        {
+
+            FileStream o_fw = new FileStream(s_newFilePath, FileMode.Create, FileAccess.Write);
+            BinaryWriter o_bw = new BinaryWriter(o_fw);
+            o_bw.Write("s");
+            o_bw.Write("m");
+            o_bw.Write("d");
+            o_bw.Close();
+            o_fw.Close();
+        }
 
         static void Entpacken_Method(string Filename)
         {
