@@ -136,25 +136,31 @@ namespace Packer_Projekt
             byte b_Zeichen;
             bool b_ZaehlerG255 = false;
             char c_Marker = '{';
-            int i_Zaehler = 0;
+            int i_Zaehler = 1;
             //Schleife mit welcher die Files verkürzt werden
-            while (o_fr.Position < o_fr.Length-1)
+            while (o_fr.Position < o_fr.Length )
             {
-                b_Zeichen = o_br.ReadByte();
-                while (b_Zeichen == o_br.ReadByte() && !b_ZaehlerG255)
+                b_Zeichen = (byte)o_br.ReadChar();
+                o_fr.Position -= -1;
+                while (b_Zeichen == (byte)o_br.ReadChar() && !b_ZaehlerG255)
                 {
                     i_Zaehler++;
+                    if(o_fr.Position < o_fr.Length)
+                    {
+                        b_ZaehlerG255 = true;
+                    }
                     if(i_Zaehler==255)
                     {
                         b_ZaehlerG255 = true;
                     }
                 }
+                o_fr.Position -= 1;
                 if (i_Zaehler >= 3)
                 {
                     o_bw.Write((byte)c_Marker);
                     o_bw.Write((byte)i_Zaehler);
-                    o_bw.Write((byte)b_Zeichen);
-                    i_Zaehler = 0;
+                    o_bw.Write(b_Zeichen);
+                    i_Zaehler = 1;
                 }
                 else
                 {
@@ -162,7 +168,7 @@ namespace Packer_Projekt
                     {
                         o_bw.Write(b_Zeichen);
                     }
-                    i_Zaehler = 0;
+                    i_Zaehler = 1;
                 }
             }
             o_br.Close();
