@@ -30,8 +30,8 @@ namespace Packer_Projekt
         public string File_Path()
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.InitialDirectory = "c:\\";
-            openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg |Textdateien (*.txt)|*.txt | All files (*.*)|*.*";
+            openFileDialog1.InitialDirectory = "Desktop";
+            openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg | All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
 
@@ -58,7 +58,7 @@ namespace Packer_Projekt
         }
         private void Header(string s_newFilePath, string s_oldFilePath, char c_Marker)
         {
-            string s_Filename = System.IO.Path.GetFileName(s_oldFilePath);
+            string s_Filename = System.IO.Path.GetFileNameWithoutExtension(s_oldFilePath);
             FileStream o_fw = new FileStream(s_newFilePath, FileMode.Create, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
             c_Marker = '{';
