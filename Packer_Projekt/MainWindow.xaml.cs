@@ -58,7 +58,7 @@ namespace Packer_Projekt
         }
         private void Header(string s_newFilePath, string s_oldFilePath, char c_Marker)
         {
-
+            string s_Filename = System.IO.Path.GetFileName(s_oldFilePath);
             FileStream o_fw = new FileStream(s_newFilePath, FileMode.Create, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
             c_Marker = '{';
@@ -66,20 +66,20 @@ namespace Packer_Projekt
             o_bw.Write((byte)'m');
             o_bw.Write((byte)'d');
             o_bw.Write((byte)c_Marker);
-            if(s_oldFilePath.Length > 8)
+            if(s_Filename.Length > 8)
             {
                 for(int i = 0; i < 7; i++)
                 {
-                    o_bw.Write((byte)s_oldFilePath[i]);
+                    o_bw.Write((byte)s_Filename[i]);
                 }
                 o_bw.Write((byte)'~');
             }
-            else if(s_oldFilePath.Length < 8)
+            else if(s_Filename.Length < 8)
             {
                 int i_Zaehler = 0;
-                for (int i = 0; i < s_oldFilePath.Length; i++)
+                for (int i = 0; i < s_Filename.Length; i++)
                 {
-                    o_bw.Write((byte)s_oldFilePath[i]);
+                    o_bw.Write((byte)s_Filename[i]);
                     i_Zaehler++;
                 }
                 while(i_Zaehler != 8)
@@ -90,9 +90,9 @@ namespace Packer_Projekt
             }
             else
             {
-                for (int i = 0; i < s_oldFilePath.Length; i++)
+                for (int i = 0; i < s_Filename.Length; i++)
                 {
-                    o_bw.Write((byte)s_oldFilePath[i]);
+                    o_bw.Write((byte)s_Filename[i]);
                 }
             }
             o_bw.Write((byte)'\r');
@@ -130,7 +130,7 @@ namespace Packer_Projekt
             BinaryReader o_br = new BinaryReader(o_fr);
             string newFilename = s_DateiPath + ".smd";
             Header(newFilename, s_DateiPath, '{');
-            FileStream o_fw = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
+            FileStream o_fw = new FileStream(newFilename, FileMode.Open, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
 
             byte b_Zeichen;
@@ -138,7 +138,7 @@ namespace Packer_Projekt
             char c_Marker = '{';
             int i_Zaehler = 0;
             //Schleife mit welcher die Files verkürzt werden
-            while (o_fr.Position < o_fr.Length -8)
+            while (o_fr.Position < o_fr.Length-1)
             {
                 b_Zeichen = o_br.ReadByte();
                 while (b_Zeichen == o_br.ReadByte() && !b_ZaehlerG255)
