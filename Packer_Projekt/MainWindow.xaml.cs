@@ -62,7 +62,7 @@ namespace Packer_Projekt
         {
             FileStream file_r = new FileStream(Filename, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(file_r);
-            string newFilename = Filename + ".smd";
+            string newFilename = Filename + "1";
             FileStream file_w = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
             BinaryWriter bw = new BinaryWriter(file_w);
 
