@@ -49,6 +49,7 @@ namespace Packer_Projekt
             string s_DateiPath = File_Path();
             Testbox.Text =s_DateiPath;
             VerpackenMethode(s_DateiPath);
+            
         }
 
         private void Entpacken_Click(object sender, RoutedEventArgs e)
@@ -61,7 +62,7 @@ namespace Packer_Projekt
         {
             FileStream file_r = new FileStream(Filename, FileMode.Open, FileAccess.Read);
             BinaryReader br = new BinaryReader(file_r);
-            string newFilename = Filename + "1";
+            string newFilename = Filename + ".smd";
             FileStream file_w = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
             BinaryWriter bw = new BinaryWriter(file_w);
 
