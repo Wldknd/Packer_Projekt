@@ -87,22 +87,27 @@ namespace Packer_Projekt
             FileStream o_fw = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
             byte b_Zeichen;
+            bool b_ZaehlerG255 = false;
             char c_Marker = '{';
-            int i_Zaehler = 1;
+            int i_Zaehler = 0;
             //Schleife mit welcher die Files verkürzt werden
-            while (o_fr.Position < o_fr.Length - 4)
+            while (o_fr.Position < o_fr.Length -8)
             {
                 b_Zeichen = o_br.ReadByte();
-                while (b_Zeichen == o_br.ReadByte())
+                while (b_Zeichen == o_br.ReadByte() && !b_ZaehlerG255)
                 {
                     i_Zaehler++;
+                    if(i_Zaehler==255)
+                    {
+                        b_ZaehlerG255 = true;
+                    }
                 }
                 if (i_Zaehler >= 3)
                 {
-                    o_bw.Write(c_Marker);
-                    o_bw.Write(i_Zaehler);
-                    o_bw.Write(b_Zeichen);
-                    i_Zaehler = 1;
+                    o_bw.Write((byte)c_Marker);
+                    o_bw.Write((byte)i_Zaehler);
+                    o_bw.Write((byte)b_Zeichen);
+                    i_Zaehler = 0;
                 }
                 else
                 {
@@ -110,7 +115,7 @@ namespace Packer_Projekt
                     {
                         o_bw.Write(b_Zeichen);
                     }
-                    i_Zaehler = 1;
+                    i_Zaehler = 0;
                 }
             }
             o_br.Close();
