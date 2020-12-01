@@ -46,12 +46,14 @@ namespace Packer_Projekt
         }
         private void Verpacken_Click(object sender, RoutedEventArgs e)
         {
-            Testbox.Text = File_Path();
+            string s_DateiPath = File_Path();
+            Testbox.Text =s_DateiPath;
         }
 
         private void Entpacken_Click(object sender, RoutedEventArgs e)
         {
-            Testbox.Text = File_Path();
+            string s_DateiPath = File_Path();
+            Testbox.Text = s_DateiPath;
         }
 
         static void Entpacken_Method(string Filename)
@@ -75,12 +77,12 @@ namespace Packer_Projekt
             }
         }
 
-        private void Verpacken(object sender, RoutedEventArgs e)
+        private void VerpackenMethode(string s_DateiPath)
         {
             //Öffnen der Files
-            FileStream o_fr = new FileStream(@"D:/Schule/Aufgaben/TAI12/AEAngermueler/Projekt_Packen/Dateien/Test.txt", FileMode.Open, FileAccess.Read);
+            FileStream o_fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
             BinaryReader o_br = new BinaryReader(o_fr);
-            FileStream o_fw = new FileStream(@"D:/Schule/Aufgaben/TAI12/AEAngermueler/Projekt_Packen/Dateien/Test1.txt", FileMode.Create, FileAccess.Write);
+            FileStream o_fw = new FileStream(s_DateiPath, FileMode.Create, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
             char c_Zeichen = ' ';
             char c_Marker = '{';
@@ -116,5 +118,7 @@ namespace Packer_Projekt
             o_bw.Close();
             Close();
         }
+
+        
     }
 }
