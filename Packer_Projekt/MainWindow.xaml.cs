@@ -56,14 +56,47 @@ namespace Packer_Projekt
             string s_DateiPath = File_Path();
             Testbox.Text = s_DateiPath;
         }
-        private void Header(string s_newFilePath, string s_oldFilePath)
+        private void Header(string s_newFilePath, string s_oldFilePath, char c_Marker)
         {
 
             FileStream o_fw = new FileStream(s_newFilePath, FileMode.Create, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
-            o_bw.Write("s");
-            o_bw.Write("m");
-            o_bw.Write("d");
+            c_Marker = '{';
+            o_bw.Write((byte)'s');
+            o_bw.Write((byte)'m');
+            o_bw.Write((byte)'d');
+            o_bw.Write((byte)c_Marker);
+            if(s_oldFilePath.Length > 8)
+            {
+                for(int i = 0; i < 7; i++)
+                {
+                    o_bw.Write((byte)s_oldFilePath[i]);
+                }
+                o_bw.Write((byte)'~');
+            }
+            else if(s_oldFilePath.Length < 8)
+            {
+                int i_Zaehler = 0;
+                for (int i = 0; i < s_oldFilePath.Length; i++)
+                {
+                    o_bw.Write((byte)s_oldFilePath[i]);
+                    i_Zaehler++;
+                }
+                while(i_Zaehler != 8)
+                {
+                    i_Zaehler++;
+                    o_bw.Write((byte)'_');
+                }
+            }
+            else
+            {
+                for (int i = 0; i < s_oldFilePath.Length; i++)
+                {
+                    o_bw.Write((byte)s_oldFilePath[i]);
+                }
+            }
+            o_bw.Write((byte)'\r');
+            o_bw.Write((byte)'\n');
             o_bw.Close();
             o_fw.Close();
         }
@@ -91,12 +124,15 @@ namespace Packer_Projekt
 
         private void VerpackenMethode(string s_DateiPath)
         {
+
             //Öffnen der Files
             FileStream o_fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
             BinaryReader o_br = new BinaryReader(o_fr);
             string newFilename = s_DateiPath + ".smd";
+            Header(newFilename, s_DateiPath, '{');
             FileStream o_fw = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
+
             byte b_Zeichen;
             char c_Marker = '{';
             int i_Zaehler = 1;
