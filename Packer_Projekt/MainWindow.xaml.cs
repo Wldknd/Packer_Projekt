@@ -74,5 +74,47 @@ namespace Packer_Projekt
 
             }
         }
+
+        private void Verpacken(object sender, RoutedEventArgs e)
+        {
+            //Öffnen der Files
+            FileStream o_fr = new FileStream(@"D:/Schule/Aufgaben/TAI12/AEAngermueler/Projekt_Packen/Dateien/Test.txt", FileMode.Open, FileAccess.Read);
+            BinaryReader o_br = new BinaryReader(o_fr);
+            FileStream o_fw = new FileStream(@"D:/Schule/Aufgaben/TAI12/AEAngermueler/Projekt_Packen/Dateien/Test1.txt", FileMode.Create, FileAccess.Write);
+            BinaryWriter o_bw = new BinaryWriter(o_fw);
+            char c_Zeichen = ' ';
+            char c_Marker = '{';
+            int i_Zaehler = 1;
+            //Schleife mit welcher die Files verkürzt werden
+            while (o_fr.Position < o_fr.Length - 4)
+            {
+                c_Zeichen = o_br.ReadChar();
+                while (c_Zeichen == o_br.ReadChar())
+                {
+                    i_Zaehler++;
+                }
+                if (i_Zaehler >= 3)
+                {
+                    o_bw.Write(c_Marker);
+                    o_bw.Write(i_Zaehler);
+                    o_bw.Write(c_Zeichen);
+                    i_Zaehler = 1;
+                }
+                else
+                {
+                    for (int i = 0; i < i_Zaehler; i++)
+                    {
+                        o_bw.Write(c_Zeichen);
+                    }
+                    i_Zaehler = 1;
+                }
+            }
+            o_br.Close();
+            o_fr.Close();
+            o_bw.Flush();
+            o_fw.Close();
+            o_bw.Close();
+            Close();
+        }
     }
 }
