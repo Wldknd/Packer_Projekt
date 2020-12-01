@@ -31,8 +31,7 @@ namespace Packer_Projekt
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.InitialDirectory = "c:\\";
-            openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg";
-            //|*.txt|All files (*.*)|*.*
+            openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg |Textdateien (*.txt)|*.txt | All files (*.*)|*.*";
             openFileDialog1.FilterIndex = 2;
             openFileDialog1.RestoreDirectory = true;
 
@@ -84,7 +83,8 @@ namespace Packer_Projekt
             //Öffnen der Files
             FileStream o_fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
             BinaryReader o_br = new BinaryReader(o_fr);
-            FileStream o_fw = new FileStream(s_DateiPath, FileMode.Create, FileAccess.Write);
+            string newFilename = s_DateiPath + ".smd";
+            FileStream o_fw = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
             char c_Zeichen = ' ';
             char c_Marker = '{';
