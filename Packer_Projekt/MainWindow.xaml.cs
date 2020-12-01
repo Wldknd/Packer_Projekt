@@ -86,14 +86,14 @@ namespace Packer_Projekt
             string newFilename = s_DateiPath + ".smd";
             FileStream o_fw = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
-            char c_Zeichen = ' ';
+            byte b_Zeichen;
             char c_Marker = '{';
             int i_Zaehler = 1;
             //Schleife mit welcher die Files verkürzt werden
             while (o_fr.Position < o_fr.Length - 4)
             {
-                c_Zeichen = o_br.ReadChar();
-                while (c_Zeichen == o_br.ReadChar())
+                b_Zeichen = o_br.ReadByte();
+                while (b_Zeichen == o_br.ReadByte())
                 {
                     i_Zaehler++;
                 }
@@ -101,14 +101,14 @@ namespace Packer_Projekt
                 {
                     o_bw.Write(c_Marker);
                     o_bw.Write(i_Zaehler);
-                    o_bw.Write(c_Zeichen);
+                    o_bw.Write(b_Zeichen);
                     i_Zaehler = 1;
                 }
                 else
                 {
                     for (int i = 0; i < i_Zaehler; i++)
                     {
-                        o_bw.Write(c_Zeichen);
+                        o_bw.Write(b_Zeichen);
                     }
                     i_Zaehler = 1;
                 }
