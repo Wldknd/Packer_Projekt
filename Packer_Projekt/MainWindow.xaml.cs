@@ -183,22 +183,24 @@ namespace Packer_Projekt
             BinaryReader o_br = new BinaryReader(o_fr);
 
 
-            char c_Marker = Marker_Suche(s_DateiPath);
+            char c_Marker = '{';
+            //Marker_Suche(s_DateiPath);
             string newFilename = s_DateiPath + ".smd";
-            byte b_Zeichen;
+            byte b_Zeichen ;
             bool b_ZaehlerG255 = false;
-            int i_Zaehler = 1;
+            int i_Zaehler = 0;
 
             Header(newFilename, s_DateiPath, c_Marker);
             FileStream o_fw = new FileStream(newFilename, FileMode.Open, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
-
+            o_fw.Position = o_fw.Length;
             //Schleife mit welcher die Files verkürzt werden
             while (o_fr.Position < o_fr.Length )
             {
-                b_Zeichen = (byte)o_br.ReadChar();
-                o_fr.Position -= -1;
-                while (b_Zeichen == (byte)o_br.ReadChar() && !b_ZaehlerG255)
+                b_ZaehlerG255 = false;
+                b_Zeichen =o_br.ReadByte();
+                o_fr.Position -= 1;
+                while (b_Zeichen ==o_br.ReadByte() && !b_ZaehlerG255)
                 {
                     i_Zaehler++;
                     if(o_fr.Position < o_fr.Length)
@@ -209,14 +211,16 @@ namespace Packer_Projekt
                     {
                         b_ZaehlerG255 = true;
                     }
+                    if(o_fr.Position == o_fr.Length)
+                    { break; }
                 }
                 o_fr.Position -= 1;
-                if (i_Zaehler >= 3)
+                if (i_Zaehler > 3)
                 {
                     o_bw.Write((byte)c_Marker);
                     o_bw.Write((byte)i_Zaehler);
                     o_bw.Write(b_Zeichen);
-                    i_Zaehler = 1;
+                    i_Zaehler = 0;
                 }
                 else
                 {
@@ -224,13 +228,12 @@ namespace Packer_Projekt
                     {
                         o_bw.Write(b_Zeichen);
                     }
-                    i_Zaehler = 1;
+                    i_Zaehler = 0;
                 }
             }
             o_fr.Flush();
             o_br.Close();
             o_fr.Close();
-
             o_fw.Flush();
             o_bw.Close();
             o_fw.Close();
