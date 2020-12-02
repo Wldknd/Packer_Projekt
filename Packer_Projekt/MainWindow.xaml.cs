@@ -101,6 +101,26 @@ namespace Packer_Projekt
             o_fw.Close();
         }
 
+        static char Marker_Suche(string Filename)
+        {
+            int[] a_charsuche = new int[255];
+            FileStream o_fsr = new FileStream(Filename, FileMode.Open, FileAccess.Read);
+            BinaryReader o_br = new BinaryReader(o_fsr);
+                int durchlauf = 0;
+            while(o_fsr.Position <= o_fsr.Length-1)
+            {
+                int inhalt = a_charsuche[o_fsr.ReadByte()];
+                o_fsr.Position -= 1;
+                a_charsuche[o_fsr.ReadByte()] = inhalt + 1;
+                durchlauf = durchlauf + 1;
+                inhalt = 0;
+            }
+            o_br.Close();
+            o_fsr.Close();
+            char Marker = (char)a_charsuche.Min();
+            return Marker;
+        }
+
         static void Entpacken_Method(string Filename)
         {
             FileStream file_r = new FileStream(Filename, FileMode.Open, FileAccess.Read);
@@ -128,15 +148,18 @@ namespace Packer_Projekt
             //Öffnen der Files
             FileStream o_fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
             BinaryReader o_br = new BinaryReader(o_fr);
+
+
+            char c_Marker = Marker_Suche(s_DateiPath);
             string newFilename = s_DateiPath + ".smd";
-            Header(newFilename, s_DateiPath, '{');
+            byte b_Zeichen;
+            bool b_ZaehlerG255 = false;
+            int i_Zaehler = 1;
+
+            Header(newFilename, s_DateiPath, c_Marker);
             FileStream o_fw = new FileStream(newFilename, FileMode.Open, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
 
-            byte b_Zeichen;
-            bool b_ZaehlerG255 = false;
-            char c_Marker = '{';
-            int i_Zaehler = 1;
             //Schleife mit welcher die Files verkürzt werden
             while (o_fr.Position < o_fr.Length )
             {
