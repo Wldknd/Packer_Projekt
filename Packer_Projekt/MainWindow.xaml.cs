@@ -46,11 +46,6 @@ namespace Packer_Projekt
                     openFileDialog1.Filter = "Selfmade-Dateien (*.smd)|*.smd"; // Begrenzung des Entpackens auf eigene Dateien
                     openFileDialog1.FilterIndex = 1;
                 }
-                else if(verpacken == 3) //Dateiauswahl über Button (unbekannt ob Verpacken oder Entpacken)
-                {
-                    openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg | All files (*.*)|*.* | Selfmade-Dateien (*.smd)|*.smd";
-                    openFileDialog1.FilterIndex = 3;
-                }
             // IF-Abfrage ob eine Datei ausgewählt worden ist
             if (openFileDialog1.ShowDialog() == true)
             {
@@ -73,7 +68,8 @@ namespace Packer_Projekt
                 s_DateiPath = File_Path(1);
                 Testbox.Text = s_DateiPath;
             }
-            VerpackenMethode(s_DateiPath);
+            if (File.Exists(s_DateiPath))
+                VerpackenMethode(s_DateiPath);
         }
 
         private void Entpacken_Click(object sender, RoutedEventArgs e) //Baustelle
@@ -127,13 +123,16 @@ namespace Packer_Projekt
                     o_bw.Write((byte)s_Filename[i]);
                 }
             }
-
+            for(int i = 0; i < s_endung.Length; i++)// Hinzufügen der Ursprünglichen Endung
+            {
+                o_bw.Write((byte)s_endung[i]);
+            }
             o_bw.Write((byte)'\r');
-            o_bw.Write((byte)'\n');
-            o_bw.Close();
+            o_bw.Write((byte)'\n'); //Endmarkierung des Headers
+            o_fw.Flush();
+            o_bw.Close(); //Streams Schließen
             o_fw.Close();
         }
-
         static char Marker_Suche(string Filename)
         {
             int[] a_charsuche = new int[255]; //Array erstellt um gezählte Zeichen zu speichern
