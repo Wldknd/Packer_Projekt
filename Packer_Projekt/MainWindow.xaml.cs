@@ -27,47 +27,79 @@ namespace Packer_Projekt
             InitializeComponent();
         }
 
-        public string File_Path()
+        public string File_Path(int verpacken)
         {
+            // Zugriff auf Explorer
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.InitialDirectory = "Desktop";
-            openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg | All files (*.*)|*.*";
-            openFileDialog1.FilterIndex = 2;
-            openFileDialog1.RestoreDirectory = true;
+            openFileDialog1.InitialDirectory = "Desktop"; // Festlegen des Verzeichnisses, welches als erstes ausgewählt wird
 
+            //IF Abfrage für den Filter
+                if (verpacken == 1) //Dateiauswahl zum Verpacken
+                {
+                    openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg | All files (*.*)|*.*"; 
+                    // Filter, welche Dateien angezeigt werden
+                    openFileDialog1.FilterIndex = 2; // Festlegen welcher Filter beim öffnen ausgewählt ist
+               
+                }
+                else if(verpacken == 2)//Dateiauswahl zum Entpacken
+                {
+                    openFileDialog1.Filter = "Selfmade-Dateien (*.smd)|*.smd"; // Begrenzung des Entpackens auf eigene Dateien
+                    openFileDialog1.FilterIndex = 1;
+                }
+                else if(verpacken == 3) //Dateiauswahl über Button (unbekannt ob Verpacken oder Entpacken)
+                {
+                    openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg | All files (*.*)|*.* | Selfmade-Dateien (*.smd)|*.smd";
+                    openFileDialog1.FilterIndex = 3;
+                }
+            // IF-Abfrage ob eine Datei ausgewählt worden ist
             if (openFileDialog1.ShowDialog() == true)
             {
                 string fileSelected = openFileDialog1.FileName;
-                return fileSelected;
+                return fileSelected; // Rückgabe der ausgewählten Datei
             }
-
             else return "Fehler";
+        }
+
+        private void Dateiauswahl_Click(object sender, RoutedEventArgs e)
+        {
+            string s_Dateipfad = File_Path(3);
+            Testbox.Text = s_Dateipfad;
         }
         private void Verpacken_Click(object sender, RoutedEventArgs e)
         {
-            string s_DateiPath = File_Path();
-            Testbox.Text =s_DateiPath;
+            string s_DateiPath = Testbox.Text;
+            if (!File.Exists(s_DateiPath))
+            {
+                s_DateiPath = File_Path(1);
+                Testbox.Text = s_DateiPath;
+            }
             VerpackenMethode(s_DateiPath);
-            
         }
 
-        private void Entpacken_Click(object sender, RoutedEventArgs e)
+        private void Entpacken_Click(object sender, RoutedEventArgs e) //Baustelle
         {
-            string s_DateiPath = File_Path();
+            string s_DateiPath = File_Path(2);
             Testbox.Text = s_DateiPath;
+            // OB DATEI UNSERE (.smd) MUSS GETESTET WERDEN!!! wegen button und manueller Eingabe
         }
         private void Header(string s_newFilePath, string s_oldFilePath, char c_Marker)
         {
             string s_Filename = System.IO.Path.GetFileNameWithoutExtension(s_oldFilePath);
+            //Rausziehen des Namens ohne Endung (aufgrund der Namenslängenbegrenzung)
+            //ausm Pfad und speicherung in der Variable
+            string s_endung = System.IO.Path.GetExtension(s_oldFilePath);
+            // Speicherung der Endung in einer Variable
             FileStream o_fw = new FileStream(s_newFilePath, FileMode.Create, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
-            c_Marker = '{';
-            o_bw.Write((byte)'s');
-            o_bw.Write((byte)'m');
+            // Öffnen des Streams zum Schreiben und erstellen der Zieldatei
+            o_bw.Write((byte)'s'); //Byteweises Schreiben unserer Endung im Header
+            o_bw.Write((byte)'m'); //Zur identifikation, dass es unsere Dateien sind
             o_bw.Write((byte)'d');
-            o_bw.Write((byte)c_Marker);
+            o_bw.Write((byte)c_Marker); // Setzen des seltensten Zeichens als Marker 
+            // Um herauszufinden was das Trennzeichen in der Datei ist
+            //IF Abfrage der Länge des Namens + Anpassungen je nach Länge
             if(s_Filename.Length > 8)
-            {
+            { //Name verkürzen, wenn länger als 8 Zeichen
                 for(int i = 0; i < 7; i++)
                 {
                     o_bw.Write((byte)s_Filename[i]);
@@ -75,7 +107,7 @@ namespace Packer_Projekt
                 o_bw.Write((byte)'~');
             }
             else if(s_Filename.Length < 8)
-            {
+            { //Name auffüllen auf 8 Zeichen, wenn kleiner
                 int i_Zaehler = 0;
                 for (int i = 0; i < s_Filename.Length; i++)
                 {
@@ -89,12 +121,13 @@ namespace Packer_Projekt
                 }
             }
             else
-            {
+            { //Bei genau 8 Zeichen Namen schreiben
                 for (int i = 0; i < s_Filename.Length; i++)
                 {
                     o_bw.Write((byte)s_Filename[i]);
                 }
             }
+
             o_bw.Write((byte)'\r');
             o_bw.Write((byte)'\n');
             o_bw.Close();
@@ -103,22 +136,22 @@ namespace Packer_Projekt
 
         static char Marker_Suche(string Filename)
         {
-            int[] a_charsuche = new int[255];
+            int[] a_charsuche = new int[255]; //Array erstellt um gezählte Zeichen zu speichern
             FileStream o_fsr = new FileStream(Filename, FileMode.Open, FileAccess.Read);
-            BinaryReader o_br = new BinaryReader(o_fsr);
-                int durchlauf = 0;
-            while(o_fsr.Position <= o_fsr.Length-1)
+            BinaryReader o_br = new BinaryReader(o_fsr);  //Streams zum Dateilesen geöffnet.
+            while(o_fsr.Position <= o_fsr.Length-1) // Schleife um die Datei Zeichen für Zeichen durchzugehen
             {
-                int inhalt = a_charsuche[o_fsr.ReadByte()];
-                o_fsr.Position -= 1;
-                a_charsuche[o_fsr.ReadByte()] = inhalt + 1;
-                durchlauf = durchlauf + 1;
-                inhalt = 0;
+                int inhalt = a_charsuche[o_fsr.ReadByte()]; // Zwischenspeichern der Anzahl des Zeichens
+                o_fsr.Position -= 1; // Position einen Schritt zuruück gehen um kein Zeichen zu überspringen
+                a_charsuche[o_fsr.ReadByte()] = inhalt + 1; // Anzahl des Zeichens um eins erhöhen 
+                inhalt = 0; // Zwischenspeicher Löschen zur Vermeidung von Falschzählungen
             }
+            o_fsr.Flush();
             o_br.Close();
-            o_fsr.Close();
-            char Marker = (char)a_charsuche.Min();
-            return Marker;
+            o_fsr.Close(); // Streams leeren und Schließen
+            //Nehmen der kleinsten Anzahl, davon den Index in Char umwandeln (Index == ASCII Tabelle) und in Variable speichern
+            char marker = (char)Array.IndexOf(a_charsuche, a_charsuche.Min());
+            return marker; //Rückgabe des Zeichens, welches am seltensten vorkommt
         }
 
         static void Entpacken_Method(string Filename)
@@ -194,14 +227,14 @@ namespace Packer_Projekt
                     i_Zaehler = 1;
                 }
             }
+            o_fr.Flush();
             o_br.Close();
             o_fr.Close();
-            o_bw.Flush();
-            o_fw.Close();
+
+            o_fw.Flush();
             o_bw.Close();
-            Close();
+            o_fw.Close();
         }
 
-        
     }
 }

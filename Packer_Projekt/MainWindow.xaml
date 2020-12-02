@@ -5,11 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Packer_Projekt"
         mc:Ignorable="d"
-        Title="MainWindow" Height="394.5" Width="560">
+        Title="Selfmade-Packer" Height="394.5" Width="560">
     <Grid>
         <Button Content="Verpacken" HorizontalAlignment="Left" Margin="24,198,0,0" VerticalAlignment="Top" Width="168" Height="144" Click="Verpacken_Click"/>
         <Button x:Name="Entpacken" Content="Entpacken" HorizontalAlignment="Left" Margin="300,198,0,0" VerticalAlignment="Top" Width="172" Height="144" Click="Entpacken_Click"/>
-        <TextBox x:Name="Testbox" HorizontalAlignment="Left" Height="42" Margin="24,26,0,0" TextWrapping="Wrap" Text="Dateiname" VerticalAlignment="Top" Width="500"/>
+        <TextBox x:Name="Testbox" HorizontalAlignment="Left" Height="21" Margin="24,26,0,0" TextWrapping="Wrap" Text="Dateipfad" VerticalAlignment="Top" Width="287"/>
+        <Button Content="Datei auswählen" HorizontalAlignment="Left" Height="21" Margin="339,26,0,0" VerticalAlignment="Top" Width="104" Click="Dateiauswahl_Click"/>
 
     </Grid>
 </Window>
