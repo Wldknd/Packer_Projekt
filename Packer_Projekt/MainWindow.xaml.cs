@@ -48,7 +48,7 @@ namespace Packer_Projekt
                 }
                 else if(verpacken == 3) //Dateiauswahl über Button (unbekannt ob Verpacken oder Entpacken)
                 {
-                    openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg | All files (*.*)|*.* | Selfmade-Dateien (*.smd)|*.smd";
+                    openFileDialog1.Filter = "Bilddateien (*.bmp, *.jpg)|*.bmp;*.jpg| Selfmade-Dateien (*.smd)|*.smd| All files (*.*)|*.*";
                     openFileDialog1.FilterIndex = 3;
                 }
             // IF-Abfrage ob eine Datei ausgewählt worden ist
@@ -200,12 +200,12 @@ namespace Packer_Projekt
                 b_ZaehlerG255 = false;
                 b_Zeichen =o_br.ReadByte();
                 o_fr.Position -= 1;
-                while (b_Zeichen ==o_br.ReadByte() && !b_ZaehlerG255)
+                while ((b_Zeichen == o_br.ReadByte()) && !b_ZaehlerG255)
                 {
                     i_Zaehler++;
                     if(o_fr.Position < o_fr.Length)
                     {
-                        b_ZaehlerG255 = true;
+                        b_ZaehlerG255 = false;
                     }
                     if(i_Zaehler==255)
                     {
@@ -214,6 +214,8 @@ namespace Packer_Projekt
                     if(o_fr.Position == o_fr.Length)
                     { break; }
                 }
+                if (o_fr.Position == o_fr.Length) { }
+                else
                 o_fr.Position -= 1;
                 if (i_Zaehler > 3)
                 {
