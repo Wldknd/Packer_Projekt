@@ -81,6 +81,7 @@ namespace Packer_Projekt
         {
             string s_DateiPath = File_Path(2);
             Testbox.Text = s_DateiPath;
+            EntpackenMethod(s_DateiPath);
             // OB DATEI UNSERE (.smd) MUSS GETESTET WERDEN!!! wegen button und manueller Eingabe
         }
         private void Header(string s_newFilePath, string s_oldFilePath, char c_Marker)
@@ -158,27 +159,46 @@ namespace Packer_Projekt
             return marker; //Rückgabe des Zeichens, welches am seltensten vorkommt
         }
 
-        static void Entpacken_Method(string Filename)
+        static void EntpackenMethod(string s_DateiPath)
         {
-            FileStream file_r = new FileStream(Filename, FileMode.Open, FileAccess.Read);
-            BinaryReader br = new BinaryReader(file_r);
-            string newFilename = Filename + "";
-            FileStream file_w = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
-            BinaryWriter bw = new BinaryWriter(file_w);
 
-            while(file_r.Position < file_r.Length)
+            string newFilename = s_DateiPath;
+            char c_Marker = ' ';
+            int i_anzahl;
+            FileStream fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
+            BinaryReader br = new BinaryReader(fr);
+            for(int i = 3; i < 16; i++)
             {
-                int i_int = 4;
-                while (file_r.Position > 5)
-                {
-                    file_r.Position = file_r.Position - i_int;
-                    i_int = 8;
-                    bw.Write(br.ReadChar());
-                }
+                fr.Position = i;
+                if (i == 3)
+                    c_Marker = (char)br.ReadByte();
+                else
+                newFilename += (char)br.ReadByte();
+            }
+            fr.Position = 18;
+            FileStream fw = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
+            BinaryWriter bw = new BinaryWriter(fw);
 
+            while(fr.Position < fr.Length)
+            {
+                string s_Kette = "";
+                char c_zeichen = (char)br.ReadByte();
+                if(c_zeichen == c_Marker)
+                {
+                    i_anzahl = (int)br.ReadByte();
+                    char c_buchstabe = (char)br.ReadByte();
+                    for(int i = 0; i < i_anzahl; i++)
+                    {
+                        s_Kette +=c_buchstabe;
+                    }
+                    bw.Write(s_Kette);
+                }
+                else
+                {
+                    bw.Write(c_zeichen);
+                }
             }
         }
-
         private void VerpackenMethode(string s_DateiPath)
         {
 
@@ -187,7 +207,7 @@ namespace Packer_Projekt
             BinaryReader o_br = new BinaryReader(o_fr);
 
 
-            char c_Marker = '{';
+            char c_Marker = Marker_Suche(s_DateiPath);
             //Marker_Suche(s_DateiPath);
             string newFilename = s_DateiPath + ".smd";
             byte b_Zeichen ;
@@ -244,6 +264,5 @@ namespace Packer_Projekt
             o_bw.Close();
             o_fw.Close();
         }
-
     }
 }
