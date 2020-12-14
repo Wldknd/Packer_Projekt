@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
+using System.Windows.Forms;
 
 namespace Packer_Projekt
 {
@@ -30,7 +31,7 @@ namespace Packer_Projekt
         public string File_Path(int verpacken)
         {
             // Zugriff auf Explorer
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            Microsoft.Win32.OpenFileDialog openFileDialog1 = new Microsoft.Win32.OpenFileDialog();
             openFileDialog1.InitialDirectory = "Desktop"; // Festlegen des Verzeichnisses, welches als erstes ausgewählt wird
 
             //IF Abfrage für den Filter
@@ -59,11 +60,25 @@ namespace Packer_Projekt
             }
             else return "Fehler";
         }
-
+        private string ziel_Ordner()
+        {
+            string folder = "";
+            FolderBrowserDialog diag = new FolderBrowserDialog();
+            if (diag.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                folder = diag.SelectedPath;  //selected folder path
+            }
+            return folder;
+        }
         private void Dateiauswahl_Click(object sender, RoutedEventArgs e)
         {
             string s_Dateipfad = File_Path(3);
             tb_Datei.Text = s_Dateipfad;
+        }
+        private void Zielort_Click(object sender, RoutedEventArgs e)
+        {
+            string s_Zielort = ziel_Ordner();
+            tb_Ziel.Text = s_Zielort;
         }
         private void Verpacken_Click(object sender, RoutedEventArgs e)
         {
@@ -76,7 +91,6 @@ namespace Packer_Projekt
             if (File.Exists(s_DateiPath))
                 VerpackenMethode(s_DateiPath);
         }
-
         private void Entpacken_Click(object sender, RoutedEventArgs e) //Baustelle
         {
             string s_DateiPath = tb_Datei.Text;
@@ -86,7 +100,7 @@ namespace Packer_Projekt
                 tb_Datei.Text = s_DateiPath;
             }
             if (File.Exists(s_DateiPath))
-                VerpackenMethode(s_DateiPath);
+                EntpackenMethod(s_DateiPath);
             // OB DATEI UNSERE (.smd) MUSS GETESTET WERDEN!!! wegen button und manueller Eingabe
         }
         private void Header(string s_newFilePath, string s_oldFilePath, char c_Marker)
@@ -163,10 +177,9 @@ namespace Packer_Projekt
             char marker = (char)Array.IndexOf(a_charsuche, a_charsuche.Min());
             return marker; //Rückgabe des Zeichens, welches am seltensten vorkommt
         }
-
-        static void EntpackenMethod(string s_DateiPath)
+        private void EntpackenMethod(string s_DateiPath)
         {
-
+            tb_Status.Text = "Datei wird Entpackt. Bitte warten.";
             string newFilename = s_DateiPath;
             byte c_Marker = 0;
             byte i_anzahl;
@@ -201,9 +214,11 @@ namespace Packer_Projekt
                     bw.Write((char)c_zeichen);
                 }
             }
+            tb_Status.Text = "Datei wurde Entpackt.";
         }
         private void VerpackenMethode(string s_DateiPath)
         {
+            tb_Status.Text = "Datei wird verpackt. Bitte warten.";
             //Öffnen der Files
             FileStream o_fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
             BinaryReader o_br = new BinaryReader(o_fr);
@@ -263,6 +278,8 @@ namespace Packer_Projekt
             o_fw.Flush();
             o_bw.Close();
             o_fw.Close();
+            tb_Status.Text = "Datei fertig gepackt.";
         }
+
     }
 }
