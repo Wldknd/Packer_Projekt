@@ -220,47 +220,44 @@ namespace Packer_Projekt
         }
         private void EntpackenMethod(string s_DateiPath)
         {
-            bool smdDatei = Dateinutzbar(s_DateiPath);
-            if (smdDatei)
+            tb_Status.Text = "Datei wird Entpackt. Bitte warten.";
+            string newFilename = s_DateiPath;
+            byte c_Marker = 0;
+            byte i_anzahl;
+            FileStream fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
+            BinaryReader br = new BinaryReader(fr);
+            for (int i = 3; i < 16; i++)
             {
-                tb_Status.Text = "Datei wird Entpackt. Bitte warten.";
-                string newFilename = s_DateiPath;
-                byte c_Marker = 0;
-                byte i_anzahl;
-                FileStream fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
-                BinaryReader br = new BinaryReader(fr);
-                for (int i = 3; i < 16; i++)
-                {
-                    fr.Position = i;
-                    if (i == 3)
-                        c_Marker = br.ReadByte();
-                    else
-                        newFilename += (char)br.ReadByte();
-                }
-                fr.Position = 18;
-                FileStream fw = new FileStream("‪C:\\Users\\Schet\\Desktop\\schwarz.txt", FileMode.Create, FileAccess.Write);
-                BinaryWriter bw = new BinaryWriter(fw);
-
-                while (fr.Position < fr.Length)
-                {
-                    byte c_zeichen = br.ReadByte();
-                    if (c_zeichen == c_Marker)
-                    {
-                        i_anzahl = br.ReadByte();
-                        byte c_buchstabe = br.ReadByte();
-                        for (int i = 0; i < i_anzahl; i++)
-                        {
-                            bw.Write((char)c_buchstabe);
-                        }
-                    }
-                    else
-                    {
-                        bw.Write((char)c_zeichen);
-                    }
-                }
-                tb_Status.Text = "Datei wurde Entpackt.";
+                fr.Position = i;
+                if (i == 3)
+                    c_Marker = br.ReadByte();
+                else
+                    newFilename += (char)br.ReadByte();
             }
+            fr.Position = 18;
+            FileStream fw = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
+            BinaryWriter bw = new BinaryWriter(fw);
+
+            while (fr.Position < fr.Length)
+            {
+                byte c_zeichen = br.ReadByte();
+                if (c_zeichen == c_Marker)
+                {
+                    i_anzahl = br.ReadByte();
+                    byte c_buchstabe = br.ReadByte();
+                    for (int i = 0; i < i_anzahl; i++)
+                    {
+                        bw.Write((char)c_buchstabe);
+                    }
+                }
+                else
+                {
+                    bw.Write((char)c_zeichen);
+                }
+            }
+            tb_Status.Text = "Datei wurde Entpackt.";
         }
+    
         private void VerpackenMethode(string s_DateiPath)
         {
             //Öffnen der Files
