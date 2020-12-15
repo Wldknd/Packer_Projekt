@@ -83,24 +83,46 @@ namespace Packer_Projekt
         private void Verpacken_Click(object sender, RoutedEventArgs e)
         {
             string s_DateiPath = tb_Datei.Text;
+            string s_ZielPath = tb_Ziel.Text;
             if (!File.Exists(s_DateiPath))
             {
+                tb_Status.Text = "Bitte wählen Sie eine Datei aus.";
                 s_DateiPath = File_Path(1);
                 tb_Datei.Text = s_DateiPath;
             }
+            if (!Directory.Exists(s_ZielPath))
+            {
+                tb_Status.Text = "Bitte wählen Sie einen Zielort aus.";
+                s_ZielPath = ziel_Ordner();
+                tb_Ziel.Text = s_ZielPath;
+            }
             if (File.Exists(s_DateiPath))
+            {
+                tb_Status.Text = "Datei wird verpackt. Bitte warten.";
                 VerpackenMethode(s_DateiPath);
+            }
         }
-        private void Entpacken_Click(object sender, RoutedEventArgs e) //Baustelle
+        private void Entpacken_Click(object sender, RoutedEventArgs e)
         {
             string s_DateiPath = tb_Datei.Text;
+            string s_ZielPath = tb_Ziel.Text;
             if (!File.Exists(s_DateiPath))
             {
+                tb_Status.Text = "Bitte wählen Sie eine Datei aus.";
                 s_DateiPath = File_Path(1);
                 tb_Datei.Text = s_DateiPath;
             }
+            if (!Directory.Exists(tb_Ziel.Text))
+            {
+                tb_Status.Text = "Bitte wählen Sie einen Zielort aus.";
+                s_ZielPath = ziel_Ordner();
+                tb_Ziel.Text = s_ZielPath;
+            }
             if (File.Exists(s_DateiPath))
+            {
+                tb_Status.Text = "Datei wird Entpackt. Bitte warten.";
                 EntpackenMethod(s_DateiPath);
+            }
             // OB DATEI UNSERE (.smd) MUSS GETESTET WERDEN!!! wegen button und manueller Eingabe
         }
         private void Header(string s_newFilePath, string s_oldFilePath, char c_Marker)
@@ -160,14 +182,15 @@ namespace Packer_Projekt
         }
         static char Marker_Suche(string Filename)
         {
-            int[] a_charsuche = new int[255]; //Array erstellt um gezählte Zeichen zu speichern
+            int[] a_charsuche = new int[256]; //Array erstellt um gezählte Zeichen zu speichern
             FileStream o_fsr = new FileStream(Filename, FileMode.Open, FileAccess.Read);
             BinaryReader o_br = new BinaryReader(o_fsr);  //Streams zum Dateilesen geöffnet.
             while (o_fsr.Position <= o_fsr.Length - 1) // Schleife um die Datei Zeichen für Zeichen durchzugehen
             {
-                int inhalt = a_charsuche[o_fsr.ReadByte()]; // Zwischenspeichern der Anzahl des Zeichens
-                o_fsr.Position -= 1; // Position einen Schritt zuruück gehen um kein Zeichen zu überspringen
-                a_charsuche[o_fsr.ReadByte()] = inhalt + 1; // Anzahl des Zeichens um eins erhöhen 
+                int stelle = o_fsr.ReadByte();
+                int inhalt = a_charsuche[stelle]; // Zwischenspeichern der Anzahl des Zeichens
+                //o_fsr.Position -= 1; // Position einen Schritt zuruück gehen um kein Zeichen zu überspringen
+                a_charsuche[stelle] = inhalt + 1; // Anzahl des Zeichens um eins erhöhen 
                 inhalt = 0; // Zwischenspeicher Löschen zur Vermeidung von Falschzählungen
             }
             o_fsr.Flush();
@@ -177,62 +200,89 @@ namespace Packer_Projekt
             char marker = (char)Array.IndexOf(a_charsuche, a_charsuche.Min());
             return marker; //Rückgabe des Zeichens, welches am seltensten vorkommt
         }
+        private bool Dateinutzbar(string s_DateiPath)
+        {
+            FileStream o_fsr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
+            BinaryReader o_br = new BinaryReader(o_fsr);
+            if (o_br.ReadByte() == 's')
+            {
+                if (o_br.ReadByte() == 'm')
+                {
+                    if (o_br.ReadByte() == 'd')
+                        return true;
+                    else return false;
+                }
+                else return false;
+            }
+            else
+                return false;
+
+        }
         private void EntpackenMethod(string s_DateiPath)
         {
-            tb_Status.Text = "Datei wird Entpackt. Bitte warten.";
-            string newFilename = s_DateiPath;
-            byte c_Marker = 0;
-            byte i_anzahl;
-            FileStream fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
-            BinaryReader br = new BinaryReader(fr);
-            for (int i = 3; i < 16; i++)
+            bool smdDatei = Dateinutzbar(s_DateiPath);
+            if (smdDatei)
             {
-                fr.Position = i;
-                if (i == 3)
-                    c_Marker = br.ReadByte();
-                else
-                    newFilename += (char)br.ReadByte();
-            }
-            fr.Position = 18;
-            FileStream fw = new FileStream(newFilename, FileMode.Create, FileAccess.Write);
-            BinaryWriter bw = new BinaryWriter(fw);
-
-            while (fr.Position < fr.Length)
-            {
-                byte c_zeichen = br.ReadByte();
-                if (c_zeichen == c_Marker)
+                tb_Status.Text = "Datei wird Entpackt. Bitte warten.";
+                string newFilename = s_DateiPath;
+                byte c_Marker = 0;
+                byte i_anzahl;
+                FileStream fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
+                BinaryReader br = new BinaryReader(fr);
+                for (int i = 3; i < 16; i++)
                 {
-                    i_anzahl = br.ReadByte();
-                    byte c_buchstabe = br.ReadByte();
-                    for (int i = 0; i < i_anzahl; i++)
+                    fr.Position = i;
+                    if (i == 3)
+                        c_Marker = br.ReadByte();
+                    else
+                        newFilename += (char)br.ReadByte();
+                }
+                fr.Position = 18;
+                FileStream fw = new FileStream("‪C:\\Users\\Schet\\Desktop\\schwarz.txt", FileMode.Create, FileAccess.Write);
+                BinaryWriter bw = new BinaryWriter(fw);
+
+                while (fr.Position < fr.Length)
+                {
+                    byte c_zeichen = br.ReadByte();
+                    if (c_zeichen == c_Marker)
                     {
-                        bw.Write((char)c_buchstabe);
+                        i_anzahl = br.ReadByte();
+                        byte c_buchstabe = br.ReadByte();
+                        for (int i = 0; i < i_anzahl; i++)
+                        {
+                            bw.Write((char)c_buchstabe);
+                        }
+                    }
+                    else
+                    {
+                        bw.Write((char)c_zeichen);
                     }
                 }
-                else
-                {
-                    bw.Write((char)c_zeichen);
-                }
+                tb_Status.Text = "Datei wurde Entpackt.";
             }
-            tb_Status.Text = "Datei wurde Entpackt.";
         }
         private void VerpackenMethode(string s_DateiPath)
         {
-            tb_Status.Text = "Datei wird verpackt. Bitte warten.";
             //Öffnen der Files
             FileStream o_fr = new FileStream(s_DateiPath, FileMode.Open, FileAccess.Read);
             BinaryReader o_br = new BinaryReader(o_fr);
 
             char c_Marker = Marker_Suche(s_DateiPath);
-            string newFilename = s_DateiPath + ".smd";
-            byte b_Zeichen;
-            bool b_ZaehlerG255 = false;
-            int i_Zaehler = 0;
+            string newFilepath = tb_Ziel.Text;
+            string s_Dateiname = "";
+            if(tb_Name.Text == "Neuer Dateiname (optional)")
+                s_Dateiname = System.IO.Path.GetFileNameWithoutExtension(s_DateiPath);
+            else
+             s_Dateiname = tb_Name.Text;
+            string newFilename = newFilepath + "\\" +  s_Dateiname + ".smd";
 
             Header(newFilename, s_DateiPath, c_Marker);
             FileStream o_fw = new FileStream(newFilename, FileMode.Open, FileAccess.Write);
             BinaryWriter o_bw = new BinaryWriter(o_fw);
             o_fw.Position = o_fw.Length;
+            byte b_Zeichen;
+            bool b_ZaehlerG255 = false;
+            int i_Zaehler = 0;
             //Schleife mit welcher die Files verkürzt werden
             while (o_fr.Position < o_fr.Length)
             {
