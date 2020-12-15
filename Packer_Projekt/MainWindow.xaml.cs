@@ -141,7 +141,7 @@ namespace Packer_Projekt
         }
         static char Marker_Suche(string Filename)
         {
-            int[] a_charsuche = new int[255]; //Array erstellt um gezählte Zeichen zu speichern
+            int[] a_charsuche = new int[256]; //Array erstellt um gezählte Zeichen zu speichern
             FileStream o_fsr = new FileStream(Filename, FileMode.Open, FileAccess.Read);
             BinaryReader o_br = new BinaryReader(o_fsr);  //Streams zum Dateilesen geöffnet.
             while(o_fsr.Position <= o_fsr.Length-1) // Schleife um die Datei Zeichen für Zeichen durchzugehen
