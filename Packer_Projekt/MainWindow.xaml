@@ -6,11 +6,15 @@
         xmlns:local="clr-namespace:Packer_Projekt"
         mc:Ignorable="d"
         Title="Selfmade-Packer" Height="394.5" Width="560">
-    <Grid>
-        <Button Content="Verpacken" HorizontalAlignment="Left" Margin="24,198,0,0" VerticalAlignment="Top" Width="168" Height="144" Click="Verpacken_Click"/>
-        <Button x:Name="Entpacken" Content="Entpacken" HorizontalAlignment="Left" Margin="300,198,0,0" VerticalAlignment="Top" Width="172" Height="144" Click="Entpacken_Click"/>
-        <TextBox x:Name="Testbox" HorizontalAlignment="Left" Height="21" Margin="24,26,0,0" TextWrapping="Wrap" Text="Dateipfad" VerticalAlignment="Top" Width="287"/>
+    <Grid x:Name="grid">
+        <Button Content="Verpacken" HorizontalAlignment="Left" Margin="24,145,0,0" VerticalAlignment="Top" Width="168" Height="144" Click="Verpacken_Click"/>
+        <Button x:Name="Entpacken" Content="Entpacken" HorizontalAlignment="Left" Margin="240,145,0,0" VerticalAlignment="Top" Width="172" Height="144" Click="Entpacken_Click"/>
         <Button Content="Datei auswählen" HorizontalAlignment="Left" Height="21" Margin="339,26,0,0" VerticalAlignment="Top" Width="104" Click="Dateiauswahl_Click"/>
+        <Button Content="Zielort auswählen" HorizontalAlignment="Left" Height="19" Margin="339,60,0,0" VerticalAlignment="Top" Width="104" Click="Zielort_Click"/>
+        <TextBlock x:Name="tb_Datei" HorizontalAlignment="Left" Margin="24,36,0,0" TextWrapping="Wrap" Text="Dateipfad" VerticalAlignment="Top" Height="18" Width="287" Foreground="Black" Background="#FFAEAEAE"/>
+        <TextBlock x:Name="tb_Ziel" HorizontalAlignment="Left" Margin="24,66,0,0" TextWrapping="Wrap" Text="Zielpfad" VerticalAlignment="Top" Height="18" Width="287" Foreground="Black" Background="#FFAEAEAE"/>
+        <TextBox x:Name="tb_Name" HorizontalAlignment="Left" Height="18" Margin="24,103,0,0" TextWrapping="Wrap" Text="Neuer Dateiname (optional)" VerticalAlignment="Top" Width="287"/>
+        <TextBlock x:Name="tb_Status" HorizontalAlignment="Left" Height="26" Margin="24,313,0,0" TextWrapping="Wrap" Text="Status" VerticalAlignment="Top" Width="388"/>
 
     </Grid>
 </Window>
